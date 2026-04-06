@@ -110,8 +110,9 @@ If you see a quota error, the script is reaching the API successfully, but your 
 - The canonical evaluation set is fixed in `eval_set.json`.
 
 ## Submission placeholders
-- GitHub repo link: `[PASTE YOUR GITHUB REPO LINK HERE]`
-- Video link: `[PASTE YOUR UNLISTED YOUTUBE OR VIMEO LINK HERE]`
+
+- GitHub repo link: [genai-support-workflow-prototype](https://github.com/Bwana912/genai-support-workflow-prototype)
+- Video link: [Walkthrough video](https://your-video-link)
 
 ## Final note
 This repository is designed to show judgment, not just generation quality. The intended deployment recommendation is a human-reviewed drafting assistant for routine tickets, with automatic escalation for policy exceptions, missing facts, legal threats, chargebacks, abusive messages, and other higher-risk cases.
