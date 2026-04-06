@@ -112,7 +112,7 @@ If you see a quota error, the script is reaching the API successfully, but your 
 ## Submission placeholders
 
 - GitHub repo link: [genai-support-workflow-prototype](https://github.com/Bwana912/genai-support-workflow-prototype)
-- Video link: [Walkthrough video](https://your-video-link)
+- Video link: [Walkthrough video](https://www.youtube.com/watch?v=i_7nt57O7lA)
 
 ## Final note
 This repository is designed to show judgment, not just generation quality. The intended deployment recommendation is a human-reviewed drafting assistant for routine tickets, with automatic escalation for policy exceptions, missing facts, legal threats, chargebacks, abusive messages, and other higher-risk cases.
