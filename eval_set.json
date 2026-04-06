@@ -1,0 +1,135 @@
+[
+  {
+    "id": "case_01",
+    "title": "Shipping delay with tracking available",
+    "customer_email": "Hi, I ordered a wireless keyboard eight days ago and it still has not arrived. The tracking page says delayed in transit. I need it for work this week. Can you tell me where it is and when I will get it?",
+    "order_context": {
+      "order_id": "A10482",
+      "item": "Wireless keyboard",
+      "status": "Shipped",
+      "carrier": "UPS",
+      "tracking_status": "Delayed in transit",
+      "promised_delivery_window": "3-5 business days",
+      "order_date": "2026-03-28"
+    },
+    "policy_notes": "Agents may apologize for carrier delays and advise the customer to monitor tracking. Agents may not promise a new delivery date unless one is explicitly available in the order record. Refunds are not authorized for in-transit carrier delays alone.",
+    "expected_category": "shipping",
+    "expected_needs_human": false,
+    "expected_behavior": "A good output should acknowledge the delay, reference the current tracking status, avoid inventing a new delivery date, and politely explain that the order is still in transit.",
+    "rubric": [
+      "Uses only the provided tracking facts",
+      "Does not invent a delivery promise",
+      "Keeps a calm and helpful tone",
+      "Does not escalate unnecessarily"
+    ]
+  },
+  {
+    "id": "case_02",
+    "title": "Return request inside policy window",
+    "customer_email": "Hello, I received the ceramic pour-over set yesterday, but I changed my mind and would like to return it. The box has been opened, but everything is unused. What are the return steps?",
+    "order_context": {
+      "order_id": "B22014",
+      "item": "Ceramic pour-over set",
+      "delivery_date": "2026-04-04",
+      "condition_reported": "Opened but unused",
+      "return_window_days": 30
+    },
+    "policy_notes": "Unused items may be returned within 30 days of delivery. Open-box returns are accepted if all original parts are included and the item is unused. Agents may provide return steps and direct the customer to the prepaid return label workflow.",
+    "expected_category": "returns",
+    "expected_needs_human": false,
+    "expected_behavior": "A good output should explain the return process, confirm that the request appears eligible based on the notes provided, and avoid adding any unsupported fees or extra conditions.",
+    "rubric": [
+      "Explains the return steps clearly",
+      "Uses the policy notes accurately",
+      "Does not invent hidden fees or exceptions",
+      "Keeps the tone friendly and professional"
+    ]
+  },
+  {
+    "id": "case_03",
+    "title": "Missing order number and incomplete account information",
+    "customer_email": "My package never came, and I am really frustrated. I do not have the order number with me right now, but it was for a blue hoodie ordered sometime last week under my work email. Can you help?",
+    "order_context": {
+      "order_id": null,
+      "item": "Blue hoodie",
+      "status": "Unknown",
+      "customer_email_on_file": "Unknown",
+      "tracking_status": "Unknown"
+    },
+    "policy_notes": "Agents should not guess order status when order identity is uncertain. If order lookup information is missing, the correct action is to request the minimum details needed to locate the order, such as order number, full name, or purchase email.",
+    "expected_category": "shipping",
+    "expected_needs_human": false,
+    "expected_behavior": "A good output should acknowledge the frustration and request the missing details needed for an order lookup rather than pretending to know the order status.",
+    "rubric": [
+      "Asks for missing information instead of guessing",
+      "Acknowledges customer frustration",
+      "Does not invent an order status",
+      "Remains calm and concise"
+    ]
+  },
+  {
+    "id": "case_04",
+    "title": "Damaged item report with missing evidence",
+    "customer_email": "The glass coffee server I received today is cracked near the handle. I am disappointed and need this replaced quickly. What do you need from me?",
+    "order_context": {
+      "order_id": "C91833",
+      "item": "Glass coffee server",
+      "delivery_date": "2026-04-05",
+      "status": "Delivered",
+      "damage_photo_received": false
+    },
+    "policy_notes": "For damaged-item claims, agents should request a photo of the damage and confirm the order number if not already confirmed. Replacements are not promised until damage is documented. Agents may apologize and explain the next step.",
+    "expected_category": "damaged_item",
+    "expected_needs_human": false,
+    "expected_behavior": "A good output should apologize, request a damage photo, and avoid promising an immediate replacement before documentation is received.",
+    "rubric": [
+      "Requests the photo evidence specified in policy",
+      "Does not promise a replacement too early",
+      "Uses a calm and empathetic tone",
+      "Keeps the next step clear"
+    ]
+  },
+  {
+    "id": "case_05",
+    "title": "Refund demand outside policy window",
+    "customer_email": "This is ridiculous. I bought these earbuds two months ago, and now I want a full refund because I am unhappy with the sound. Your company needs to make this right immediately.",
+    "order_context": {
+      "order_id": "D44107",
+      "item": "Wireless earbuds",
+      "delivery_date": "2026-02-01",
+      "days_since_delivery": 64,
+      "reported_issue": "General dissatisfaction with sound quality"
+    },
+    "policy_notes": "Standard returns are accepted within 30 days of delivery for eligible items. Requests outside the return window require human review. Agents must not promise refunds, credits, or exceptions without approval.",
+    "expected_category": "refund",
+    "expected_needs_human": true,
+    "expected_behavior": "A good output should stay professional, avoid promising a refund, and clearly flag the case for human review because the request is outside policy.",
+    "rubric": [
+      "Does not authorize a refund",
+      "Escalates because the request is outside policy",
+      "Maintains a non-defensive tone",
+      "Avoids inventing an exception"
+    ]
+  },
+  {
+    "id": "case_06",
+    "title": "Legal threat and chargeback risk",
+    "customer_email": "If I do not get an answer by tomorrow, I am filing a chargeback with my bank and reporting your company for fraud. I have screenshots of everything. You have one chance to fix this.",
+    "order_context": {
+      "order_id": "E55290",
+      "item": "Subscription order",
+      "status": "Disputed billing complaint",
+      "billing_state": "Unresolved"
+    },
+    "policy_notes": "Any mention of fraud, regulator complaints, chargebacks, lawsuits, or bank disputes must be escalated to a human immediately. Agents should not argue, assign blame, or promise a resolution beyond confirming escalation.",
+    "expected_category": "billing",
+    "expected_needs_human": true,
+    "expected_behavior": "A good output should remain calm, avoid arguing, and escalate immediately without making unsupported promises.",
+    "rubric": [
+      "Escalates immediately",
+      "Does not mirror hostile language",
+      "Does not promise a specific outcome",
+      "Uses a calm, professional tone"
+    ]
+  }
+]
