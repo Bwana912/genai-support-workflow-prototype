@@ -193,7 +193,63 @@ def save_json(filename: Path, payload: dict):
         json.dump(payload, f, indent=2, ensure_ascii=False)
 
 
-def run_single_case(cases, case_id: str, prompt_version: str, model: str, temperature: float):
+def print_header(title: str):
+    border = "=" * len(title)
+    print(f"\n{border}\n{title}\n{border}")
+
+
+def print_single_case_summary(output: dict, show_raw: bool = False):
+    case = output["case"]
+    result = output["model_output"]
+    checks = output["auto_checks"]
+
+    print_header("SINGLE CASE RESULT")
+    print(f"Saved to: {output['output_file']}")
+    print(f"Case ID: {case['id']}")
+    print(f"Title: {case.get('title', 'N/A')}")
+    print(f"Model: {output['model']} | Prompt: {output['prompt_version']} | Temperature: {output['temperature']}")
+    print(f"Score: {checks['score_out_of_4']}/4 | Category match: {checks['category_match']} | Needs human match: {checks['needs_human_match']}")
+    print(f"Category: {result.get('category', 'N/A')} | Needs human: {result.get('needs_human', 'N/A')}")
+    print(f"Reason: {result.get('reason', '').strip()}")
+    print(f"Reply subject: {result.get('reply_subject', '').strip()}")
+    print("Reply body:")
+    print(result.get('reply_body', '').strip())
+
+    if show_raw:
+        print_header("RAW MODEL RESPONSE")
+        print(output['raw_response_text'])
+        print_header("FULL OUTPUT JSON")
+        print(json.dumps(output, indent=2, ensure_ascii=False))
+
+
+def print_eval_summary(summary: dict, show_raw: bool = False):
+    print_header("EVAL SUMMARY")
+    print(f"Saved to: {summary['output_file']}")
+    print(f"Model: {summary['model']} | Prompt: {summary['prompt_version']} | Temperature: {summary['temperature']}")
+    print(f"Cases processed: {summary['num_cases']}")
+
+    correct_category = sum(r["auto_checks"]["category_match"] for r in summary["results"])
+    correct_routing = sum(r["auto_checks"]["needs_human_match"] for r in summary["results"])
+    valid_json_like = sum(r["auto_checks"]["valid_required_fields"] for r in summary["results"])
+    print(f"Required fields present: {valid_json_like}/{summary['num_cases']}")
+    print(f"Category match: {correct_category}/{summary['num_cases']}")
+    print(f"Needs human match: {correct_routing}/{summary['num_cases']}")
+
+    print_header("CASE RESULTS")
+    for result in summary["results"]:
+        status = result["status"]
+        score = result["auto_checks"]["score_out_of_4"]
+        category_flag = "✓" if result["auto_checks"]["category_match"] else "✗"
+        human_flag = "✓" if result["auto_checks"]["needs_human_match"] else "✗"
+        print(f"{result['case_id']}: {status.upper():5} | Score: {score}/4 | Category: {category_flag} | Needs human: {human_flag} | Title: {result['title']}")
+        if status == "error":
+            print(f"  ERROR: {result['raw_response_text']}")
+        elif show_raw:
+            if not result["auto_checks"]["valid_required_fields"]:
+                print(f"  RAW RESPONSE: {result['raw_response_text']}")
+
+
+def run_single_case(cases, case_id: str, prompt_version: str, model: str, temperature: float, show_raw: bool):
     case = deepcopy(find_case(cases, case_id))
     system_prompt = PROMPTS[prompt_version]
     contents = build_contents(case)
@@ -218,14 +274,13 @@ def run_single_case(cases, case_id: str, prompt_version: str, model: str, temper
     }
 
     out_file = OUTPUT_DIR / f"single_{case_id}_{prompt_version}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    output["output_file"] = str(out_file)
     save_json(out_file, output)
 
-    print("\n=== SINGLE CASE RESULT ===")
-    print(f"Saved to: {out_file}")
-    print(json.dumps(output, indent=2, ensure_ascii=False))
+    print_single_case_summary(output, show_raw=show_raw)
 
 
-def run_eval(cases, prompt_version: str, model: str, temperature: float):
+def run_eval(cases, prompt_version: str, model: str, temperature: float, show_raw: bool):
     results = []
     system_prompt = PROMPTS[prompt_version]
 
@@ -277,20 +332,9 @@ def run_eval(cases, prompt_version: str, model: str, temperature: float):
     }
 
     out_file = OUTPUT_DIR / f"eval_{prompt_version}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    summary["output_file"] = str(out_file)
     save_json(out_file, summary)
-
-    correct_category = sum(r["auto_checks"]["category_match"] for r in results)
-    correct_routing = sum(r["auto_checks"]["needs_human_match"] for r in results)
-    valid_json_like = sum(r["auto_checks"]["valid_required_fields"] for r in results)
-
-    print("\n=== EVAL SUMMARY ===")
-    print(f"Saved to: {out_file}")
-    print(f"Model: {model}")
-    print(f"Prompt version: {prompt_version}")
-    print(f"Cases: {len(cases)}")
-    print(f"Required fields present: {valid_json_like}/{len(cases)}")
-    print(f"Category match: {correct_category}/{len(cases)}")
-    print(f"needs_human match: {correct_routing}/{len(cases)}")
+    print_eval_summary(summary, show_raw=show_raw)
 
 
 def parse_args():
@@ -300,6 +344,7 @@ def parse_args():
     parser.add_argument("--prompt-version", choices=["v1", "v2", "v3"], default="v3")
     parser.add_argument("--model", default=os.getenv("GEMINI_MODEL", DEFAULT_MODEL))
     parser.add_argument("--temperature", type=float, default=0.2)
+    parser.add_argument("--show-raw", action="store_true", help="Print raw model response and full output JSON in the console")
     return parser.parse_args()
 
 
@@ -315,6 +360,7 @@ def main():
             prompt_version=args.prompt_version,
             model=args.model,
             temperature=args.temperature,
+            show_raw=args.show_raw,
         )
     else:
         run_eval(
@@ -322,6 +368,7 @@ def main():
             prompt_version=args.prompt_version,
             model=args.model,
             temperature=args.temperature,
+            show_raw=args.show_raw,
         )
 
 
